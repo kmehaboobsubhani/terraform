@@ -11,6 +11,8 @@ terraform {
 provider "aws" {
   region  = "us-east-1" 
   profile = "default"
+  access_key ="AKIAYU7VQFD6EQH5NFPV"
+  secret_key ="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"
  
 }
 # --------- VPC------- Done
