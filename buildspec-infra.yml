@@ -1,0 +1,26 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      java: corretto11
+  pre_build:
+    commands:
+      - echo "Install Hashicorp Terraform"
+      - wget https://releases.hashicorp.com/terraform/1.2.1/terraform_1.2.1_linux_amd64.zip
+      - unzip terraform_1.2.1_linux_amd64.zip
+      - mv terraform /usr/local/bin/
+      - ls -lrt /usr/local/bin/terraform
+      - cd $CODEBUILD_SRC_DIR/iac/
+      - terraform -v 
+      - terraform init 
+      - terraform fmt
+      - terraform validate 
+  build:
+    commands:
+      - echo "Executing Build Phase"
+      - terraform plan
+      - terraform apply -auto-approve 
+  post_build:
+    commands:
+      - echo "Infra Job is completed on `date`"
