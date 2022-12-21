@@ -121,7 +121,19 @@ resource "aws_security_group" "my_security_group" {
   }
 }
 
+data "template_file" "cb_user_data1" {
+  template = file("${path.module}install-web1.tpl")
+  vars = {
+    env = "dev"
+  }
+}
 
+data "template_file" "cb_user_data2" {
+  template = file("${path.module}/install-web2.tpl")
+  vars = {
+    env = "dev"
+  }
+}
 
 # Create AWS ec2 instance
 resource "aws_instance" "myFirstInstance" {
@@ -130,19 +142,35 @@ resource "aws_instance" "myFirstInstance" {
   instance_type   = var.instance_type
   subnet_id = aws_subnet.mehaboob_public_subnet1.id
   security_groups = [aws_security_group.my_security_group.id]
+  user_data              = data.template_file.cb_user_data1.rendered
   tags = {
     Name = var.tag_name
+    CreatedBy = "Terraform"
+  }
+}
+
+# Create AWS ec2 instance
+resource "aws_instance" "mySecondInstance" {
+  ami             = var.ami_id
+  key_name        = var.key_name
+  instance_type   = var.instance_type
+  subnet_id = aws_subnet.mehaboob_public_subnet1.id
+  security_groups = [aws_security_group.my_security_group.id]
+  user_data              = data.template_file.cb_user_data2.rendered
+  tags = {
+    Name = var.tag_name
+    CreatedBy = "Terraform"
   }
 }
 
 # Create Elastic IP address
-resource "aws_eip" "myFirstInstance" {
-  vpc      = true
-  instance = aws_instance.myFirstInstance.id
-  tags = {
-    Name = "my_elastic_ip"
-  }
-}
+# resource "aws_eip" "myFirstInstance" {
+#   vpc      = true
+#   instance = aws_instance.myFirstInstance.id
+#   tags = {
+#     Name = "my_elastic_ip"
+#   }
+# }
 
 
 # Outputs
@@ -154,5 +182,11 @@ output "internet_gateway_id" {
 }
 output "aws_route_table" {
   value = aws_route_table.example1.id
+}
+output "aws_instance" {
+  value = aws_instance.myFirstInstance.id
+}
+output "aws_instance" {
+  value = aws_instance.mySecondInstance.id
 }
 
