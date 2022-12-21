@@ -11,7 +11,7 @@ phases:
       - unzip terraform_1.2.1_linux_amd64.zip
       - mv terraform /usr/local/bin/
       - ls -lrt /usr/local/bin/terraform
-      - cd $CODEBUILD_SRC_DIR/iac/
+      - cd $CODEBUILD_SRC_DIR/
       - terraform -v 
       - terraform init 
       - terraform fmt
