@@ -163,6 +163,27 @@ resource "aws_instance" "mySecondInstance" {
   }
 }
 
+
+resource "aws_lb" "test" {
+  name               = "test-lb-tf"
+  internal           = false
+  load_balancer_type = "application"
+  security_groups    = [aws_security_group.my_security_group.id]
+  subnets            = [aws_subnet.mehaboob_public_subnet1.id]
+
+  enable_deletion_protection = true
+
+  access_logs {
+    bucket  = aws_s3_bucket.lb_logs.bucket
+    prefix  = "test-lb"
+    enabled = true
+  }
+
+  tags = {
+    Environment = "production"
+  }
+}
+
 # Create Elastic IP address
 # resource "aws_eip" "myFirstInstance" {
 #   vpc      = true
@@ -189,4 +210,3 @@ output "aws_instance" {
 output "aws_instance" {
   value = aws_instance.mySecondInstance.id
 }
-
